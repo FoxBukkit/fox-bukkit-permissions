@@ -1,0 +1,26 @@
+name: FoxBukkit
+main: com.foxelbox.foxbukkit.core.FoxBukkit
+version: 1.0.0
+depend: [FoxBukkitChatComponent]
+softdepend: [WorldEdit, LogBlock]
+commands:
+  fb:
+    description: Runs any FoxBukkit command (used for console)
+    permission: foxbukkit.no_one_has_this_ever
+    usage: /<command>
+  lua_reload:
+    description: Reloads the Lua threads (or a single module)
+    permission: foxbukkit.lua.reload
+    usage: /<command> [module]
+  lua_load:
+    description: Loads a module
+    permission: foxbukkit.lua.load
+    usage: /<command> <module>
+  lua_unload:
+    description: Unloads a module
+    permission: foxbukkit.lua.unload
+    usage: /<command> <module>
+  lua_list:
+    description: Lists loaded/available modules
+    permission: foxbukkit.lua.list
+    usage: /<command>
