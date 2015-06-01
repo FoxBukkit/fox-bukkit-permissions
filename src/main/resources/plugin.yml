@@ -2,7 +2,7 @@ name: FoxBukkitPermissions
 main: com.foxelbox.foxbukkit.permissions.FoxBukkitPermissions
 version: 1.0.0
 commands:
-  fbreloadpermissions:
+  reloadpermissions:
     description: Reloads permissions engine
     permission: foxbukkit.permissions.reload
     usage: /<command>

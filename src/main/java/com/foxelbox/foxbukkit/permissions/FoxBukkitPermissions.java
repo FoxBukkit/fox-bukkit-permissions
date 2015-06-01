@@ -45,7 +45,7 @@ public class FoxBukkitPermissions extends JavaPlugin {
 
 		getServer().getPluginManager().registerEvents(new PermissionsPlayerListener(), this);
 
-		getServer().getPluginCommand("fbreloadpermissions").setExecutor(new CommandExecutor() {
+		getServer().getPluginCommand("reloadpermissions").setExecutor(new CommandExecutor() {
 			@Override
 			public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
 				FoxBukkitPermissionHandler.instance.reload();
