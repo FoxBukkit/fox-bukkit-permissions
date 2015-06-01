@@ -19,13 +19,16 @@ package com.foxelbox.foxbukkit.permissions;
 import com.foxelbox.dependencies.config.Configuration;
 import com.foxelbox.dependencies.redis.RedisManager;
 import com.foxelbox.dependencies.threading.SimpleThreadCreator;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class FoxBukkitPermissions extends JavaPlugin {
 	public static FoxBukkitPermissions instance;
 
 	public Configuration configuration;
-
 	public RedisManager redisManager;
 
 	private StringBuilder makeMessageBuilder() {
@@ -38,6 +41,21 @@ public class FoxBukkitPermissions extends JavaPlugin {
 		configuration = new Configuration(getDataFolder());
 		redisManager = new RedisManager(new SimpleThreadCreator(), configuration);
 
+		FoxBukkitPermissionHandler.instance.load();
+
 		getServer().getPluginManager().registerEvents(new PermissionsPlayerListener(), this);
+
+		getServer().getPluginCommand("fbreloadpermissions").setExecutor(new CommandExecutor() {
+			@Override
+			public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+				FoxBukkitPermissionHandler.instance.reload();
+				commandSender.sendMessage(makeMessageBuilder().append("Permissions reloaded").toString());
+				return true;
+			}
+		});
+
+		for(Player player : getServer().getOnlinePlayers()) {
+			Utils.patchPlayer(player);
+		}
 	}
 }

@@ -18,6 +18,7 @@ package com.foxelbox.foxbukkit.permissions;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -26,6 +27,15 @@ import java.util.UUID;
 
 public class Utils {
     public static UUID CONSOLE_UUID = UUID.nameUUIDFromBytes("[CONSOLE]".getBytes());
+
+    static void patchPlayer(Player player) {
+        if(player instanceof CraftHumanEntity) {
+            final CraftHumanEntity craftPlayer = (CraftHumanEntity)player;
+            Utils.setPrivateValue(CraftHumanEntity.class, craftPlayer, "perm", new FoxBukkitPermissibleBase(player));
+        } else {
+            player.kickPlayer("You != CraftHumanEntity");
+        }
+    }
 
     public static UUID getCommandSenderUUID(CommandSender commandSender) {
         if(commandSender instanceof Player)
