@@ -56,12 +56,8 @@ public class FoxBukkitPermissionHandler {
 	}
 
 	private boolean loaded = false;
-	private final Map<String,String> playerGroups = FoxBukkitPermissions.instance.redisManager.createCachedRedisMap("playergroups").addOnChangeHook(new CacheMap.OnChangeHook() {
-        @Override
-        public void onEntryChanged(String key, String value) {
-            //FoxBukkit.instance.playerHelper.refreshPlayerRank(UUID.fromString(key));
-        }
-    });
+	private final Map<String,String> playerGroups = FoxBukkitPermissions.instance.redisManager.createCachedRedisMap("playergroups");
+	private final Map<String,String> rankLevels = FoxBukkitPermissions.instance.redisManager.createCachedRedisMap("ranklevels");
 	private final HashMap<GroupWorld,HashSet<String>> groupPermissions = new HashMap<>();
 	private final HashMap<GroupWorld,HashSet<String>> groupProhibitions = new HashMap<>();
 	
@@ -192,6 +188,18 @@ public class FoxBukkitPermissionHandler {
 
 	public boolean has(UUID uuid, String permission) {
 		return has(defaultWorld, uuid, permission);
+	}
+
+	public int getImmunityLevel(UUID uuid) {
+		return Integer.parseInt(rankLevels.get(getGroup(uuid)));
+	}
+
+	public int getImmunityLevel(Player ply) {
+		return Integer.parseInt(rankLevels.get(getGroup(ply)));
+	}
+
+	public String getGroup(Player ply) {
+		return getGroup(ply.getUniqueId());
 	}
 
 	public String getGroup(UUID uuid) {
