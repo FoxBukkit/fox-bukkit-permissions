@@ -30,12 +30,39 @@ public class FoxBukkitPermissibleBase extends PermissibleBase {
 	private CommandSender parentC = null;
 	private ServerOperator opable = null;
 
-	private FoxBukkitPermissionHandler handler;
-	private void __init() {
-		handler = FoxBukkitPermissionHandler.instance;
+	private final FoxBukkitPermissions plugin;
+
+	public FoxBukkitPermissibleBase(ServerOperator opable, FoxBukkitPermissions plugin) {
+		super(opable);
+
+		this.plugin = plugin;
+		this.handler = plugin.handler;
+
+		this.opable = opable;
+
+		if(opable instanceof Permissible) {
+			this.parent = (Permissible)opable;
+		}
+
+		__init_end();
 	}
+
+	public FoxBukkitPermissibleBase(Permissible parent, FoxBukkitPermissions plugin) {
+		super(parent);
+
+		this.plugin = plugin;
+		this.handler = plugin.handler;
+
+		this.parent = parent;
+
+		__init_end();
+	}
+
+	private FoxBukkitPermissionHandler handler;
 	private void __init_end() {
-		if(this.parent == null) return;
+		if(this.parent == null) {
+			return;
+		}
 
 		if(this.parent instanceof CommandSender) {
 			this.parentC = (CommandSender)parent;
@@ -43,30 +70,6 @@ public class FoxBukkitPermissibleBase extends PermissibleBase {
 		
 		recalculatePermissions();
 	}
-	
-	public FoxBukkitPermissibleBase(Permissible parent) {
-		super(parent);
-
-		__init();
-		
-		this.parent = parent;
-		
-		__init_end();
-	}
-	
-	public FoxBukkitPermissibleBase(ServerOperator opable) {
-		super(opable);
-
-		__init();
-		
-        this.opable = opable;
-
-		if(opable instanceof Permissible) {
-			this.parent = (Permissible)opable;
-		}
-		
-		__init_end();
-    }
 
 	@Override
 	public boolean isOp() {

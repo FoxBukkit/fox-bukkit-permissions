@@ -16,7 +16,6 @@
  */
 package com.foxelbox.foxbukkit.permissions;
 
-import com.foxelbox.dependencies.redis.CacheMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,7 +28,18 @@ import java.util.Map;
 import java.util.UUID;
 
 public class FoxBukkitPermissionHandler {
-	public static final FoxBukkitPermissionHandler instance = new FoxBukkitPermissionHandler();
+	private final FoxBukkitPermissions plugin;
+	private boolean loaded = false;
+	private final Map<String,String> playerGroups;
+	private final Map<String,String> rankLevels;
+	private final HashMap<GroupWorld,HashSet<String>> groupPermissions = new HashMap<>();
+	private final HashMap<GroupWorld,HashSet<String>> groupProhibitions = new HashMap<>();
+
+	public FoxBukkitPermissionHandler(FoxBukkitPermissions plugin) {
+		this.plugin = plugin;
+		this.playerGroups = plugin.redisManager.createCachedRedisMap("playergroups");
+		this.rankLevels = plugin.redisManager.createCachedRedisMap("ranklevels");
+	}
 
 	class GroupWorld {
 		public final String group;
@@ -54,12 +64,6 @@ public class FoxBukkitPermissionHandler {
 			return (group.hashCode() / 2) + (world.hashCode() / 2);
 		}
 	}
-
-	private boolean loaded = false;
-	private final Map<String,String> playerGroups = FoxBukkitPermissions.instance.redisManager.createCachedRedisMap("playergroups");
-	private final Map<String,String> rankLevels = FoxBukkitPermissions.instance.redisManager.createCachedRedisMap("ranklevels");
-	private final HashMap<GroupWorld,HashSet<String>> groupPermissions = new HashMap<>();
-	private final HashMap<GroupWorld,HashSet<String>> groupProhibitions = new HashMap<>();
 	
 	private String defaultWorld = "world";
 
@@ -77,7 +81,7 @@ public class FoxBukkitPermissionHandler {
 		groupPermissions.clear();
 		groupProhibitions.clear();
 
-		final File permissionsDirectory = new File(FoxBukkitPermissions.instance.getDataFolder() + "/permissions");
+		final File permissionsDirectory = new File(plugin.getDataFolder() + "/permissions");
 		permissionsDirectory.mkdirs();
 		File[] files = permissionsDirectory.listFiles();
 		if (files == null)
