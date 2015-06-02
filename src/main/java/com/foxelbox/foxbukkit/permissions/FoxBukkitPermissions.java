@@ -49,10 +49,10 @@ public class FoxBukkitPermissions extends JavaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
-		handler = new FoxBukkitPermissionHandler(this);
 		configuration = new Configuration(getDataFolder());
 		redisManager = new RedisManager(new SimpleThreadCreator(), configuration);
 
+		handler = new FoxBukkitPermissionHandler(this);
 		handler.load();
 
 		getServer().getPluginManager().registerEvents(this, this);
