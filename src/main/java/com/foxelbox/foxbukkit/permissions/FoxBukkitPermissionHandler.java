@@ -195,11 +195,15 @@ public class FoxBukkitPermissionHandler {
 	}
 
 	public int getImmunityLevel(UUID uuid) {
-		return Integer.parseInt(rankLevels.get(getGroup(uuid)));
+		return getImmunityLevel(getGroup(uuid));
 	}
 
 	public int getImmunityLevel(Player ply) {
-		return Integer.parseInt(rankLevels.get(getGroup(ply)));
+		return getImmunityLevel(getGroup(ply));
+	}
+
+	public int getImmunityLevel(String group) {
+		return Integer.parseInt(rankLevels.get(group));
 	}
 
 	public String getGroup(Player ply) {
