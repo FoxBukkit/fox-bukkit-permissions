@@ -48,6 +48,13 @@ public class FoxBukkitPermissions extends JavaPlugin implements Listener {
 	}
 
 	@Override
+	public void onDisable() {
+		super.onDisable();
+
+		redisManager.stop();
+	}
+
+	@Override
 	public void onEnable() {
 		configuration = new Configuration(getDataFolder());
 		redisManager = new RedisManager(new SimpleThreadCreator(), configuration);
