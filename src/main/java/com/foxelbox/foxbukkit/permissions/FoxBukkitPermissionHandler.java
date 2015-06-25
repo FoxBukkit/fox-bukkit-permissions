@@ -32,6 +32,7 @@ public class FoxBukkitPermissionHandler {
 	private boolean loaded = false;
 	private final CacheMap playerGroups;
 	private final CacheMap rankLevels;
+	private final CacheMap rankTags;
 	private final HashMap<GroupWorld,HashSet<String>> groupPermissions = new HashMap<>();
 	private final HashMap<GroupWorld,HashSet<String>> groupProhibitions = new HashMap<>();
 
@@ -39,6 +40,7 @@ public class FoxBukkitPermissionHandler {
 		this.plugin = plugin;
 		this.playerGroups = plugin.redisManager.createCachedRedisMap("playergroups");
 		this.rankLevels = plugin.redisManager.createCachedRedisMap("ranklevels");
+        this.rankTags = plugin.redisManager.createCachedRedisMap("ranktags");
 	}
 
 	class GroupWorld {
@@ -229,6 +231,10 @@ public class FoxBukkitPermissionHandler {
             }
         });
 	}
+
+    public String getGroupTag(String group) {
+        return rankTags.get(group);
+    }
 
 	public void setGroup(UUID uuid, String group) {
 		group = group.toLowerCase();
