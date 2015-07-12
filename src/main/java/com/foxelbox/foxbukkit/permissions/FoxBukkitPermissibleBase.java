@@ -26,68 +26,29 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class FoxBukkitPermissibleBase extends PermissibleBase {
-	private Permissible parent = this;
-	private CommandSender parentC = null;
-	private ServerOperator opable = null;
+	private final Player ply;
 
-	private final FoxBukkitPermissions plugin;
+	private final FoxBukkitPermissionHandler handler;
 
-	public FoxBukkitPermissibleBase(ServerOperator opable, FoxBukkitPermissions plugin) {
-		super(opable);
-
-		this.plugin = plugin;
+	public FoxBukkitPermissibleBase(Player ply, FoxBukkitPermissions plugin) {
+		super(ply);
 		this.handler = plugin.handler;
-
-		this.opable = opable;
-
-		if(opable instanceof Permissible) {
-			this.parent = (Permissible)opable;
-		}
-
-		__init_end();
-	}
-
-	public FoxBukkitPermissibleBase(Permissible parent, FoxBukkitPermissions plugin) {
-		super(parent);
-
-		this.plugin = plugin;
-		this.handler = plugin.handler;
-
-		this.parent = parent;
-
-		__init_end();
-	}
-
-	private FoxBukkitPermissionHandler handler;
-	private void __init_end() {
-		if(this.parent == null) {
-			return;
-		}
-
-		if(this.parent instanceof CommandSender) {
-			this.parentC = (CommandSender)parent;
-		}
-		
+		this.ply = ply;
 		recalculatePermissions();
+	}
+
+	private boolean isBaseOp() {
+		return ply.isOp();
 	}
 
 	@Override
 	public boolean isOp() {
-		if(opable != null)
-			return opable.isOp();
-		else if(parent != null)
-			return parent.isOp();
-		else
-			return false;
+		return isBaseOp() || hasPermission("bukkit.base.op");
 	}
 
 	@Override
 	public void setOp(boolean arg0) {
-		if(opable != null)
-			opable.setOp(arg0);
-		else if(parent != null)
-			parent.setOp(arg0);
-		
+		ply.setOp(arg0);
 		recalculatePermissions();
 	}
 
@@ -122,13 +83,7 @@ public class FoxBukkitPermissibleBase extends PermissibleBase {
 
 	@Override
 	public boolean hasPermission(String arg0) {
-		if(this.parentC instanceof Player) {
-			return handler.has((Player)this.parentC, arg0.toLowerCase());
-		} else if(this.parentC instanceof ConsoleCommandSender) {
-			return true;
-		} else {
-			return false;
-		}
+		return handler.has(ply, arg0.toLowerCase());
 	}
 
 	@Override
