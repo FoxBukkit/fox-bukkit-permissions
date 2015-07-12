@@ -16,6 +16,7 @@
  */
 package com.foxelbox.foxbukkit.permissions;
 
+import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity;
@@ -29,6 +30,7 @@ public class Utils {
     public static UUID CONSOLE_UUID = UUID.nameUUIDFromBytes("[CONSOLE]".getBytes());
 
     static void patchPlayer(FoxBukkitPermissions plugin, Player player) {
+        plugin.getServer().getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_USERS, player);
         if(player instanceof CraftHumanEntity) {
             final CraftHumanEntity craftPlayer = (CraftHumanEntity)player;
             Utils.setPrivateValue(CraftHumanEntity.class, craftPlayer, "perm", new FoxBukkitPermissibleBase(player, plugin));
