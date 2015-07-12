@@ -19,41 +19,64 @@ package com.foxelbox.foxbukkit.permissions;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
     public static UUID CONSOLE_UUID = UUID.nameUUIDFromBytes("[CONSOLE]".getBytes());
 
+    private static final Class<?> craftHumanEntityClass;
+    static {
+        try {
+            String packageName = null;
+            Pattern packagePattern = Pattern.compile("^(org\\.bukkit\\.craftbukkit\\.v[0-9_R]+)(\\.|$)");
+            for(Package p : Package.getPackages()) {
+                String pName = p.getName();
+                Matcher m = packagePattern.matcher(pName);
+                if(m.matches()) {
+                    packageName = m.group(1);
+                    break;
+                }
+            }
+            craftHumanEntityClass = Class.forName(packageName + ".entity.CraftHumanEntity");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     static void patchPlayer(FoxBukkitPermissions plugin, Player player) {
         plugin.getServer().getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_USERS, player);
-        if(player instanceof CraftHumanEntity) {
-            final CraftHumanEntity craftPlayer = (CraftHumanEntity)player;
-            Utils.setPrivateValue(CraftHumanEntity.class, craftPlayer, "perm", new FoxBukkitPermissibleBase(player, plugin));
-        } else {
+        try {
+            Utils.setPrivateValue(craftHumanEntityClass, player, "perm", new FoxBukkitPermissibleBase(player, plugin));
+        } catch (Exception e) {
+            e.printStackTrace();
             player.kickPlayer("You != CraftHumanEntity");
         }
     }
 
     public static UUID getCommandSenderUUID(CommandSender commandSender) {
-        if(commandSender instanceof Player)
+        if(commandSender instanceof Player) {
             return ((Player) commandSender).getUniqueId();
-        if(commandSender instanceof ConsoleCommandSender)
+        }
+        if(commandSender instanceof ConsoleCommandSender) {
             return CONSOLE_UUID;
+        }
         return UUID.nameUUIDFromBytes(("[CSUUID:" + commandSender.getClass().getName() + "]").getBytes());
     }
 
     public static String getCommandSenderDisplayName(CommandSender commandSender) {
-        if(commandSender instanceof Player)
+        if(commandSender instanceof Player) {
             return ((Player) commandSender).getDisplayName();
+        }
         return commandSender.getName();
     }
 
-    public static <T, E> void setPrivateValue(Class<? super T> instanceclass, T instance, String field, E value) {
+    public static void setPrivateValue(Class<?> instanceclass, Object instance, String field, Object value) {
         try
         {
             Field field_modifiers = Field.class.getDeclaredField("modifiers");
