@@ -42,7 +42,7 @@ public class FoxBukkitPermissions extends JavaPlugin implements Listener {
 		return handler;
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Utils.patchPlayer(this, event.getPlayer());
 	}
