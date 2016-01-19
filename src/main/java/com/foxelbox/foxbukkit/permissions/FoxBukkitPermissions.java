@@ -50,7 +50,6 @@ public class FoxBukkitPermissions extends JavaPlugin implements Listener {
 	@Override
 	public void onDisable() {
 		super.onDisable();
-
 		redisManager.stop();
 	}
 
@@ -69,6 +68,28 @@ public class FoxBukkitPermissions extends JavaPlugin implements Listener {
 			public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
 				handler.reload();
 				commandSender.sendMessage(makeMessageBuilder().append("Permissions reloaded").toString());
+				return true;
+			}
+		});
+
+		getServer().getPluginCommand("pemu").setExecutor(new CommandExecutor() {
+			@Override
+			public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+				Player ply = (Player)commandSender;
+				if (strings.length < 1) {
+					handler.playerGroupsOverride.remove(ply.getUniqueId());
+					commandSender.sendMessage(makeMessageBuilder().append("PEmu off").toString());
+					return true;
+				}
+
+				String emuGroup = strings[0];
+				if(handler.getImmunityLevel(ply) >= handler.getImmunityLevel(emuGroup)) {
+					commandSender.sendMessage(makeMessageBuilder().append("You can't elevate yourself to same or higher immunity").toString());
+					return true;
+				}
+
+				handler.playerGroupsOverride.put(ply.getUniqueId(), emuGroup);
+				commandSender.sendMessage(makeMessageBuilder().append("PEmu on => ").append(emuGroup).toString());
 				return true;
 			}
 		});

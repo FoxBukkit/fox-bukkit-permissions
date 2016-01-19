@@ -6,3 +6,7 @@ commands:
     description: Reloads permissions engine
     permission: foxbukkit.permissions.reload
     usage: /<command>
+  pemu:
+    description: Emulates permissions of lower rank
+    permission: foxbukkit.permissions.emu
+    usage: /<command>

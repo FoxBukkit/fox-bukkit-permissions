@@ -36,11 +36,20 @@ public class FoxBukkitPermissionHandler {
 	private final HashMap<GroupWorld,HashSet<String>> groupPermissions = new HashMap<>();
 	private final HashMap<GroupWorld,HashSet<String>> groupProhibitions = new HashMap<>();
 
+	final HashMap<UUID, String> playerGroupsOverride = new HashMap<>();
+
 	public FoxBukkitPermissionHandler(FoxBukkitPermissions plugin) {
 		this.plugin = plugin;
 		this.playerGroups = plugin.redisManager.createCachedRedisMap("playergroups");
 		this.rankLevels = plugin.redisManager.createCachedRedisMap("ranklevels");
         this.rankTags = plugin.redisManager.createCachedRedisMap("ranktags");
+
+		addRankChangeHandler(new OnRankChange() {
+			@Override
+			public void rankChanged(UUID uuid, String newRank) {
+				playerGroupsOverride.remove(uuid);
+			}
+		});
 	}
 
 	class GroupWorld {
@@ -213,9 +222,14 @@ public class FoxBukkitPermissionHandler {
 	}
 
 	public String getGroup(UUID uuid) {
-		String result = playerGroups.get(uuid.toString());
-		if(result == null)
+		String result = playerGroupsOverride.get(uuid);
+		if (result != null) {
+			return result;
+		}
+		result = playerGroups.get(uuid.toString());
+		if (result == null) {
 			return "guest";
+		}
 		return result;
 	}
 
