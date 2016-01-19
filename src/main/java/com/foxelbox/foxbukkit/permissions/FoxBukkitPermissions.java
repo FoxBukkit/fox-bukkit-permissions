@@ -76,9 +76,15 @@ public class FoxBukkitPermissions extends JavaPlugin implements Listener {
 			@Override
 			public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
 				Player ply = (Player)commandSender;
+
 				if (strings.length < 1) {
 					handler.playerGroupsOverride.remove(ply.getUniqueId());
 					commandSender.sendMessage(makeMessageBuilder().append("PEmu off").toString());
+					return true;
+				}
+
+				if (!ply.hasPermission("foxbukkit.permissions.emu.set")) {
+					commandSender.sendMessage(makeMessageBuilder().append("You can't use PEmu On").toString());
 					return true;
 				}
 
