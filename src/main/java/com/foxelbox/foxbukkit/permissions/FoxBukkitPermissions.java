@@ -89,7 +89,7 @@ public class FoxBukkitPermissions extends JavaPlugin implements Listener {
 				}
 
 				String emuGroup = strings[0];
-				if(handler.getImmunityLevel(ply) >= handler.getImmunityLevel(emuGroup)) {
+				if(handler.getImmunityLevel(ply) <= handler.getImmunityLevel(emuGroup)) {
 					commandSender.sendMessage(makeMessageBuilder().append("You can't elevate yourself to same or higher immunity").toString());
 					return true;
 				}
