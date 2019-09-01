@@ -17,8 +17,6 @@
 package com.foxelbox.foxbukkit.permissions;
 
 import com.foxelbox.dependencies.config.Configuration;
-import com.foxelbox.dependencies.redis.RedisManager;
-import com.foxelbox.dependencies.threading.SimpleThreadCreator;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -31,7 +29,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class FoxBukkitPermissions extends JavaPlugin implements Listener {
 	Configuration configuration;
-	RedisManager redisManager;
 	FoxBukkitPermissionHandler handler;
 
 	private StringBuilder makeMessageBuilder() {
@@ -50,13 +47,11 @@ public class FoxBukkitPermissions extends JavaPlugin implements Listener {
 	@Override
 	public void onDisable() {
 		super.onDisable();
-		redisManager.stop();
 	}
 
 	@Override
 	public void onEnable() {
 		configuration = new Configuration(getDataFolder());
-		redisManager = new RedisManager(new SimpleThreadCreator(), configuration);
 
 		handler = new FoxBukkitPermissionHandler(this);
 		handler.load();

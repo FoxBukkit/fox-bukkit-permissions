@@ -16,7 +16,6 @@
  */
 package com.foxelbox.foxbukkit.permissions;
 
-import com.foxelbox.dependencies.redis.CacheMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -40,16 +39,11 @@ public class FoxBukkitPermissionHandler {
 
 	public FoxBukkitPermissionHandler(FoxBukkitPermissions plugin) {
 		this.plugin = plugin;
-		this.playerGroups = plugin.redisManager.createCachedRedisMap("playergroups");
-		this.rankLevels = plugin.redisManager.createCachedRedisMap("ranklevels");
-        this.rankTags = plugin.redisManager.createCachedRedisMap("ranktags");
+		this.playerGroups = CacheMap.create("playergroups");
+		this.rankLevels = CacheMap.create("ranklevels");
+        this.rankTags = CacheMap.create("ranktags");
 
-		addRankChangeHandler(new OnRankChange() {
-			@Override
-			public void rankChanged(UUID uuid, String newRank) {
-				playerGroupsOverride.remove(uuid);
-			}
-		});
+		addRankChangeHandler((uuid, newRank) -> playerGroupsOverride.remove(uuid));
 	}
 
 	class GroupWorld {
@@ -238,12 +232,7 @@ public class FoxBukkitPermissionHandler {
     }
 
 	public void addRankChangeHandler(final OnRankChange handler) {
-        playerGroups.addOnChangeHook(new CacheMap.OnChangeHook() {
-            @Override
-            public void onEntryChanged(String key, String value) {
-                handler.rankChanged(UUID.fromString(key), value);
-            }
-        });
+        playerGroups.addOnChangeHook((CacheMap.OnChangeHook) (key, value) -> handler.rankChanged(UUID.fromString(key), value));
 	}
 
     public String getGroupTag(String group) {
