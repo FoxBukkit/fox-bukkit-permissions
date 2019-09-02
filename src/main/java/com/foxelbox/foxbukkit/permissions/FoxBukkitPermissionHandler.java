@@ -87,11 +87,16 @@ public class FoxBukkitPermissionHandler {
 		groupPermissions.clear();
 		groupProhibitions.clear();
 
+		this.playerGroups.load();
+		this.rankLevels.load();
+		this.rankTags.load();
+
 		final File permissionsDirectory = new File(plugin.getDataFolder() + "/permissions");
 		permissionsDirectory.mkdirs();
 		File[] files = permissionsDirectory.listFiles();
-		if (files == null)
+		if (files == null) {
 			return;
+		}
 
 		for(File file : files) {
 			try {
