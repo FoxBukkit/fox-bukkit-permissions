@@ -79,20 +79,13 @@ public class Utils {
     public static void setPrivateValue(Class<?> instanceclass, Object instance, String field, Object value) {
         try
         {
-            Field field_modifiers = Field.class.getDeclaredField("modifiers");
-            field_modifiers.setAccessible(true);
-
             Field f = instanceclass.getDeclaredField(field);
-            int modifiers = field_modifiers.getInt(f);
-
-            if ((modifiers & Modifier.FINAL) != 0)
-                field_modifiers.setInt(f, modifiers & ~Modifier.FINAL);
-
             f.setAccessible(true);
             f.set(instance, value);
         }
         catch (Exception e) {
             System.err.println("Could not set field \"" + field + "\" of class \"" + instanceclass.getCanonicalName() + "\" because \"" + e.getMessage() + "\"");
+            e.printStackTrace();
         }
     }
 }

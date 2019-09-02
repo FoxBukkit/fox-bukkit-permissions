@@ -17,9 +17,6 @@
 package com.foxelbox.foxbukkit.permissions;
 
 import com.foxelbox.dependencies.config.Configuration;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -58,41 +55,35 @@ public class FoxBukkitPermissions extends JavaPlugin implements Listener {
 
 		getServer().getPluginManager().registerEvents(this, this);
 
-		getServer().getPluginCommand("reloadpermissions").setExecutor(new CommandExecutor() {
-			@Override
-			public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-				handler.reload();
-				commandSender.sendMessage(makeMessageBuilder().append("Permissions reloaded").toString());
-				return true;
-			}
+		getServer().getPluginCommand("reloadpermissions").setExecutor((commandSender, command, s, strings) -> {
+			handler.reload();
+			commandSender.sendMessage(makeMessageBuilder().append("Permissions reloaded").toString());
+			return true;
 		});
 
-		getServer().getPluginCommand("pemu").setExecutor(new CommandExecutor() {
-			@Override
-			public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-				Player ply = (Player)commandSender;
+		getServer().getPluginCommand("pemu").setExecutor((commandSender, command, s, strings) -> {
+			Player ply = (Player)commandSender;
 
-				if (strings.length < 1) {
-					handler.playerGroupsOverride.remove(ply.getUniqueId());
-					commandSender.sendMessage(makeMessageBuilder().append("PEmu off").toString());
-					return true;
-				}
-
-				if (!ply.hasPermission("foxbukkit.permissions.emu.set")) {
-					commandSender.sendMessage(makeMessageBuilder().append("You can't use PEmu On").toString());
-					return true;
-				}
-
-				String emuGroup = strings[0];
-				if(handler.getImmunityLevel(ply) <= handler.getImmunityLevel(emuGroup)) {
-					commandSender.sendMessage(makeMessageBuilder().append("You can't elevate yourself to same or higher immunity").toString());
-					return true;
-				}
-
-				handler.playerGroupsOverride.put(ply.getUniqueId(), emuGroup);
-				commandSender.sendMessage(makeMessageBuilder().append("PEmu on => ").append(emuGroup).toString());
+			if (strings.length < 1) {
+				handler.playerGroupsOverride.remove(ply.getUniqueId());
+				commandSender.sendMessage(makeMessageBuilder().append("PEmu off").toString());
 				return true;
 			}
+
+			if (!ply.hasPermission("foxbukkit.permissions.emu.set")) {
+				commandSender.sendMessage(makeMessageBuilder().append("You can't use PEmu On").toString());
+				return true;
+			}
+
+			String emuGroup = strings[0];
+			if(handler.getImmunityLevel(ply) <= handler.getImmunityLevel(emuGroup)) {
+				commandSender.sendMessage(makeMessageBuilder().append("You can't elevate yourself to same or higher immunity").toString());
+				return true;
+			}
+
+			handler.playerGroupsOverride.put(ply.getUniqueId(), emuGroup);
+			commandSender.sendMessage(makeMessageBuilder().append("PEmu on => ").append(emuGroup).toString());
+			return true;
 		});
 
 		for(Player player : getServer().getOnlinePlayers()) {
