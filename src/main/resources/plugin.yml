@@ -1,6 +1,7 @@
 name: FoxBukkitPermissions
 main: net.doridian.foxbukkit.permissions.FoxBukkitPermissions
 version: 1.1.1
+api-version: '1.20'
 commands:
   reloadpermissions:
     description: Reloads permissions engine
